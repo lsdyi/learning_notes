@@ -234,3 +234,268 @@ instruction_name有page 、include 、taglib
 
 注意动作名和前面的：之间是不能有空格的  而上面的那个指令名和@之间是可以有空格也可以无空格的
 
+
+
+odbc: java来访问微软的软件
+
+jdbc：
+
+mysqlurl = “jdbc:mysql://localhost:port;databasename";
+
+
+
+
+
+#### <% %>是普通脚本，这里面的所有代码都会放到最终生成的**_jsp.java类中的jsp_service()方法中，所以在普通脚本中定义的是局部变量，只在被调用的时候在堆栈块中有效。
+
+当然了，小破站的教程里面说普通脚本里面不能再有普通脚本，不能有html代码这都是自然而然能联想到的，java方法里面不说别的 肯定全部都是java代码嘛嘻嘻嘻
+
+
+
+##### <%! %>声明脚本，这里面的代码都会放到最终生成的**_jsp.java类中，代码中只能声明变量和方法，这些变量和方法最终会编程类中的实例变量和实例方法
+
+##### <%= %>输出脚本，里面写的东西就相当于打印的代码，即在<% %>中写代码块：out.print() ，两者唯一的区别我感觉就是没有任何区别
+
+#### 为啥会一直存在
+
+
+
+### JSP指令：可以用来设置与整个jsp页面相关的属性
+
+#### <%@page  %> 
+##### page指令为容器提供当前页面的使用说明，一个jsp页面可以有多个page指令
+属性：
+contentType 设置页面内容的格式和编码格式  "type=text/html;charset=utf-8"  在服务器的response中体现 在java类中会有语句response.setContentType("text/html; charset=utf-8")
+
+errorPage 设置该页面出现异常时的跳转页面 
+isErrorPage 是否设置当前页面为一个另一个页面的错误跳转页面  "true"
+
+import 属性用于导入包  俺觉得非常重要啊555
+
+language属性用于设置页面的代码语言 默认为java嘻嘻嘻
+
+session属性是关于session对象的话 如果这个属性的值为true的话是立即创建session对象，如果为false的话是使用的时候创建session对象 默认是为true的
+
+pageEncoding用于设置jsp页面的解码格式 相当于html页面中的<meta></meta>标签 <meta charset="utf-8"></meta> 设置html页面的解码格式
+
+
+
+#### <%@include %> 静态包含可能会有冲突问题 不建议使用
+
+#### include指令用于包含其他文件 是一种静态包含的形式
+
+属性：
+
+file 设置要引入的页面，原封不动的引入，按照顺序，该写在jsp_service()中的写在写在jsp_service()中，该是jsp实例方法和实例变量的就写在实例方法和实例变量的位置。
+
+所以在这种情况下，就得考虑一个问题，就是方法名，变量名重复的问题，要保证include进来的jsp页面普通脚本中的变量不能和母页面中的普通脚本中的变量名重复；include进来的jsp页面的声明脚本的实例方法名和实例变量名不能和母页面中的声明脚本中的实例方法名和实例变量名重复。
+
+```java
+<%include file="main.jsp" %>
+```
+
+
+
+#### <%taglib %>
+
+#### taglib指令用于进入jsp的标准标签库
+
+属性：
+
+uri：外部标签库路径 
+
+prefix：前缀
+
+
+
+### 动作标签 
+
+#### 语法<jsp:动作名 属性名=属性值 >
+
+
+
+#### include动作  动态包含 非常耐斯
+
+属性：
+
+page 相对url地址
+
+<jsp:include page="main.jsp" />
+
+#### include动作标签与include指令的不同在于，用include指令静态包含，是把外部文件的代码放到了咱们的jsp_service()方法中，include动作标签是将外部文件的结果放到了咱们的jsp_service()方法中
+
+
+
+#### useBean动作 用来加载一个将在页面中使用的javaBean
+
+属性：
+
+id 类的名字
+
+class	全限定名
+
+<jsp:useBean id="object reference" class="complete class directory" />
+
+
+
+#### getProperty动作 使用java bean类的私有实例变量
+
+属性：
+
+name java bean对象的引用变量
+
+property 对象的实例变量
+
+
+
+#### setProperty动作 设置java bean类的私有实例变量
+
+属性：
+
+name java bean对象的引用变量
+
+property 对象的实例变量
+
+value 实例变量的值
+
+
+
+#### forward动作 用来将页面跳转到一个新的jsp页面 要写项目文件夹下的相对url 不能随意跳
+
+属性：
+
+page 页面的url
+
+<jsp:forward page="url for a new page" />
+
+##### forward动作标签和response对象的sendRedirect()的区别在于forward标签在跳转页面的时候根本就没有在地址栏中重新发起请求，即使搭配了<jsp:param />param动作标签也不会在浏览器的location对象中出现任何多余的与原页面有关的参数，这是forward标签的缺点，但是另一方面它的优点是request对象会直接从原页面传到新页面，而如果用response.sendRedirect()方法跳转到新页面的话浏览器对于这个新页面的request对象就是全新的了
+
+
+
+#### param动作 和forward动作标签搭配使用 用于在不同页面中传递request的param参数
+
+属性：
+
+name 参数的名字
+
+value 参数的值
+
+<jsp:param name="para1" value="1" />
+
+##### 当然咯 这样的参数标签 一个标签只能传递一个参数哦 因为如果在一个参数标签里写多个name value那啥不就混淆了嘛嘻嘻嘻
+
+
+
+### 内置对象
+
+#### 四大作用域对象
+
+嘻嘻嘻 在学校上jsp课程的时候我一直把jsp的那几个对象弄不明白，觉得好混乱，各自有各自的应用层场景。现在才知道这几个对象对于数据的存取方式都是完全相同的，只是生命周期不同，因此也叫作作用域对象：
+
+##### pageContext：仅在当前jsp页面有效
+
+##### request： 一次请求有效
+
+##### session：一次会话有效（关闭浏览器失效）
+
+##### application：整个web应用有效（服务器重启或关闭失效）
+
+```html
+		<%
+            pageContext.setAttribute("key1", "value1");
+            pageContext.setAttribute("key2", "value2", pageContext.REQUEST_SCOPE);
+            pageContext.setAttribute("key3", "value3", pageContext.SESSION_SCOPE);
+            pageContext.setAttribute("key4", "value4", pageContext.APPLICATION_SCOPE);
+
+        %>
+
+        <h1>用pageContext取</h1>
+        <h2><%=pageContext.getAttribute("key1") %></h2>
+        <h2><%=pageContext.getAttribute("key2", pageContext.REQUEST_SCOPE) %></h2>
+        <h2><%=pageContext.getAttribute("key3", pageContext.SESSION_SCOPE) %></h2>
+        <h2><%=pageContext.getAttribute("key4", pageContext.APPLICATION_SCOPE) %></h2>
+        
+        <h1>用四大作用域取</h1>
+        <h2><%=pageContext.getAttribute("key1") %></h2>
+        <h2><%=request.getAttribute("key2") %></h2>
+        <h2><%=session.getAttribute("key3") %></h2>
+        <h2><%=application.getAttribute("key4") %></h2>
+
+        <h1>用el表达式取法1</h1>
+        <h2>${pageScope.key1}</h2>
+        <h2>${requestScope.key2}</h2>
+        <h2>${sessionScope.key3}</h2>
+        <h2>${applicationScope.key4}</h2>
+        <h1><%=pageContext.PAGECONTEXT_SCOPE %></h1>
+        <h1><%=pageContext.REQUEST_SCOPE %></h1>
+        <h1><%=pageContext.SESSION_SCOPE %></h1>
+        <h1><%=pageContext.APPLICATION_SCOPE %></h1>
+```
+
+
+
+#### EL表达式
+
+用于取四大内置对象中的attribute，用法在上面的代码块
+
+
+
+用于取自建的对象
+
+```html
+<%
+	User user1 = new User("Tom", "iostream");		//用户名为Tom，密码为iostream
+   	request.setAttribute("user1", user1);
+%>
+${user1.username}
+```
+
+但这一种方法本质上还是建立在第一种也就是用四大内置对象这个方法的基础上的:
+
+1、自建的对象需变成四大内置对象的属性
+
+2、在${user1.username}的时候要先得到user1对象然后再取username属性。而先得到user1对象实际上完整的写法应该是requestScope.user1先通过request对象拿到名为"user1"的attribute，而且后面再取username这一属性的时候本质上也是调用了对象的共有的get方法。
+
+
+
+ EL的内置对象
+
+pageContext 常用的有pageContext.request.contextPath来获得应用的上下文
+
+cookie:
+
+cookie.username 获取取名为username的cookie对象
+
+cookie.password 获取取名为password的cookie对象
+
+
+
+#### JSTL标签
+
+```
+//条件判断
+<c:if test="condition">
+</c:if>
+
+//用多重条件判断
+<c:choose>
+	<c:when test="condition1">codes</c:when>
+	<c:when test="condition2">codes</c:when>
+	<c:otherwise>codes</c:otherwise>
+</c:choose>
+```
+
+
+
+```
+//迭代遍历
+<c:forEach var="it" items="collection">
+	codes
+</c:forEach>
+
+// 键值对var 表示迭代器
+//collection表示要迭代的集合
+```
+
+#### 注意：c:if中的test和c:forEach中的items里面应该都是要用el表达式的，因为取得事先定义好的变量，当然这些变量一般都是四大内置对象中的attribute，所以还有一步别忘了，就是把这些变量要存到内置对象中的attribute中，这样${}才是识别的出
+
