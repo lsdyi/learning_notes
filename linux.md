@@ -318,3 +318,9 @@ u 撤销上次的命令
 
 
 gcc -I (directory)
+
+
+
+
+
+netstat -tlunp

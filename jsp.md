@@ -499,3 +499,26 @@ cookie.password 获取取名为password的cookie对象
 
 #### 注意：c:if中的test和c:forEach中的items里面应该都是要用el表达式的，因为取得事先定义好的变量，当然这些变量一般都是四大内置对象中的attribute，所以还有一步别忘了，就是把这些变量要存到内置对象中的attribute中，这样${}才是识别的出
 
+
+
+
+
+application对象中的东西子可多了太可怕了
+
+request对象只有在用户代理在向服务器发送请求的时候才会被创建，然后服务器将请求文件发送给用户代理之后，这个请求对象随机被释放了
+
+session对象里里面一开始都是没有东西的，但是服务器一旦往session对象里面塞了东西之后，这个东西就不会轻易的消失惹，因为session对象的生存周期是一次会话
+
+``` java
+	/*
+		现在有一个叫做user的JavaBean的对象引用变量要声明，首先要检查在它想要声明的作用域（在这里是session对象的作用域）中是否已经存在了，如果已经存在了直接把作用域中的这个对象的地址赋给这个引用变量，如果没有的话先将session对象锁住，防止线程出问题。然后new出一个JavaBean的实例对象，将这个实例对象的地址赋值给引用变量，然后再把这个地址也要给session中的同名引用变量赋值一份，这样因为session对象的生存周期很长，一时半会死不了，导致这个new出的JavaBean实例对象一直都有引用变量指向它，它也不会被内存回收
+	*/
+	User user = null;
+	synchronized(session) {
+		user = (User)_jspx_page_context.getAttribute("user", javax.servlet.jsp.PageContext.SESSION_SCOPE);
+		if(user == null) {
+			user = User();
+			_jsp_page_context.setAttribute("user", user, javax.servlet.jsp.PageContext.SESSION_SCOPE);
+		}
+	}
+```
